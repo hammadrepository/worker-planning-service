@@ -7,6 +7,7 @@ use App\Domains\Worker\Http\Mappers\WorkerMapper;
 use App\Domains\Worker\Http\Requests\CreateWorkerRequest;
 use App\Domains\Worker\Services\WorkerService;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class WorkerController extends Controller
@@ -30,26 +31,36 @@ class WorkerController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param \App\Domains\Worker\Http\Requests\CreateWorkerRequest $request
+     * @param CreateWorkerRequest $request
+     * @return JsonResponse
      * @throws \Exception
      */
-    public function store(CreateWorkerRequest $request)
+    public function store(CreateWorkerRequest $request) : JsonResponse
     {
-        $worker = $this->mapper->mapEntityFromCreateHttp($request->all());
-        $createdWorker = $this->workerService->create($worker);
+        try{
+            $worker = $this->mapper->mapEntityFromCreateHttp($request->all());
+            $createdWorker = $this->workerService->create($worker);
 
-        return $createdWorker;
+            return $this->sendResponse($createdWorker);
+        }catch (\Exception $e){
+           return $this->sendError($e->getMessage(),$e->getTrace());
+        }
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified worker.
      *
      * @param  int  $id
-     * @return Worker
+     * @return JsonResponse
+     * @throws \Exception
      */
-    public function show($id)
+    public function show($id) : JsonResponse
     {
-        return $this->workerService->findWorkerById($id);
+        try{
+            return $this->sendResponse($this->workerService->findWorkerById($id));
+        }catch (\Exception $e){
+           return $this->sendError($e->getMessage(),$e->getTrace());
+        }
     }
 
     /**

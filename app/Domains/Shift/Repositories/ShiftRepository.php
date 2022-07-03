@@ -31,14 +31,12 @@ class ShiftRepository
                 ->whereDay('date', '=', $day)
                 ->get();
         }
-
         $query
            ->map(function (UserShift $model){
             return $this->userShiftMapper->mapToEntity($model);
-
         });
         $query->map(function ($model) {
-            $model->worker = $this->workerService->findWorkerById($model->user_id);
+            $model->worker = collect($this->workerService->findWorkerById($model->user_id))->toArray();
         });
         return $query->toArray();
     }
@@ -47,11 +45,18 @@ class ShiftRepository
         return Shift::findOrFail($id);
     }
 
-    public function getWorkerShifts($worker_id)
+    public function getWorkerShifts(int $worker_id) : array
     {
-        return UserShift::where([
+        $query =  UserShift::where([
             'user_id' => $worker_id
-        ])->get()->toArray();
+        ])->get();
+        $query->map(function (UserShift $model){
+            return $this->userShiftMapper->mapToEntity($model);
+        });
+        $query->map(function ($model) use ($worker_id) {
+                $model->worker = collect($this->workerService->findWorkerById($worker_id))->toArray();
+        });
+        return $query->toArray();
     }
 
     public function getShiftByWorker(\App\Domains\Shift\Entity\UserShift $shift)

@@ -6,13 +6,11 @@ use App\Domains\Shift\Http\Mappers\UserShiftFromHTTP;
 use App\Domains\Shift\Http\Requests\AssignShiftRequest;
 use App\Domains\Shift\Http\Requests\UpdateAssignedShiftRequest;
 use App\Domains\Shift\Http\Resources\UserShiftResource;
-use App\Domains\Shift\Models\UserShift;
 use App\Domains\Shift\Services\ShiftService;
 use App\Http\Controllers\Controller;
 use Exception;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\App;
 
 class ShiftController extends Controller
 {
@@ -47,14 +45,16 @@ class ShiftController extends Controller
      * Assign a shift to worker.
      *
      * @param AssignShiftRequest $request
-//     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
     public function assignShift(AssignShiftRequest $request)
     {
-
-        $userShift = $this->mapper->mapEntityFromUserShiftCreate($request->all());
-        return new UserShiftResource($this->shiftService->assignShift($userShift));
-
+        try{
+            $userShift = $this->mapper->mapEntityFromUserShiftCreate($request->all());
+            return $this->sendResponse( $this->shiftService->assignShift($userShift));
+        }catch (Exception $e){
+            return $this->sendError($e->getMessage(),$e->getTrace());
+        }
     }
 
     /**
@@ -72,29 +72,48 @@ class ShiftController extends Controller
      * Update the specified resource in storage.
      *
      * @param UpdateAssignedShiftRequest $request
-     * @return UserShiftResource
+     * @return JsonResponse
      * @throws Exception
      */
-    public function updateAssignedShift(UpdateAssignedShiftRequest $request): UserShiftResource
+    public function updateAssignedShift(UpdateAssignedShiftRequest $request): JsonResponse
     {
-        $userShift = $this->mapper->mapEntityFromUserShiftUpdate($request->all());
-        return new UserShiftResource($this->shiftService->updateShift($userShift));
+        try{
+            $userShift = $this->mapper->mapEntityFromUserShiftUpdate($request->all());
+            return $this->sendResponse($this->shiftService->updateShift($userShift));
+        }catch (Exception $e){
+            return  $this->sendError($e->getMessage(),$e->getTrace());
+        }
     }
 
     /**
+     * Get all shifts by date.
+     * @param int $year
+     * @param int $month
+     * @param int $day
+     * @return JsonResponse
      * @throws Exception
      */
-    public function getShiftsByDate(int $year, int $month, int $day) : array
+    public function getShiftsByDate(int $year, int $month, int $day) : JsonResponse
     {
-       return $this->shiftService->getShiftsByDate($year,$month,$day);
+        try{
+            return $this->sendResponse( $this->shiftService->getShiftsByDate($year,$month,$day));
+        }catch (Exception $e){
+            return  $this->sendError($e->getMessage(),$e->getTrace());
+        }
     }
 
     /**
+     * @param $workerId
+     * @return JsonResponse
      * @throws Exception
      */
-    public function getShiftsByWorker($workerId) : array
+    public function getShiftsByWorker($workerId) : JsonResponse
     {
-        return $this->shiftService->getShiftsByWorker($workerId);
+        try{
+            return $this->sendResponse($this->shiftService->getShiftsByWorker($workerId));
+        }catch (Exception $e){
+            return $this->sendError($e->getMessage(),$e->getTrace());
+        }
     }
 
     /**

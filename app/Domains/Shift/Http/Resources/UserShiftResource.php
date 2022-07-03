@@ -21,7 +21,6 @@ class UserShiftResource extends JsonResource
             'shift_id' => $this->shift_id,
             'shift_type' => $this->shift_type,
             'date' => $this->date,
-
         ];
     }
 }
