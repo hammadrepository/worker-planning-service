@@ -41,7 +41,7 @@ class WorkerController extends Controller
             $worker = $this->mapper->mapEntityFromCreateHttp($request->all());
             $createdWorker = $this->workerService->create($worker);
 
-            return $this->sendResponse($createdWorker);
+            return $this->sendResponse($createdWorker,"", 201);
         }catch (\Exception $e){
            return $this->sendError($e->getMessage(),$e->getTrace());
         }

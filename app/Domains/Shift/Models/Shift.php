@@ -10,5 +10,12 @@ class Shift extends Model
 {
     use HasFactory;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'user_id',
+        'shift_id',
+        'shift_type',
+        'shift_start_time',
+        'shift_end_time',
+        'date'
+    ];
 }

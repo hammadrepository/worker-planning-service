@@ -9,6 +9,10 @@ use Illuminate\Database\Eloquent\Model;
 class UserShift extends Model
 {
     use HasFactory;
-    protected $guarded = [];
+    protected $fillable = [
+        'types',
+        'shift_start_time',
+        'shift_end_time',
+    ];
 
 }

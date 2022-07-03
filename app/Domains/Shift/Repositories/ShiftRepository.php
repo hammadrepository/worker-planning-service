@@ -59,7 +59,7 @@ class ShiftRepository
         return $query->toArray();
     }
 
-    public function getShiftByWorker(\App\Domains\Shift\Entity\UserShift $shift)
+    public function getShiftByWorker(UserShiftEntity $shift)
     {
         return UserShift::where([
             'user_id' => $shift->worker_id,
@@ -91,12 +91,12 @@ class ShiftRepository
         return Shift::create($attributes);
     }
 
-    public function updateWorkerShift(UserShiftEntity $shift): UserShiftEntity
+    public function updateWorkerShift(UserShiftEntity $shift)
     {
 
         if(UserShift::whereId($shift->id)->update(collect($shift)->toArray())){
             $updatedShift = UserShift::whereId($shift->id)->first();
-        };
-        return $this->userShiftMapper->mapToEntity($updatedShift);
+            return $this->userShiftMapper->mapToEntity($updatedShift);
+        }
     }
 }
